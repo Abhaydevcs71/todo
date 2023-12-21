@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:todo/screens/home.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -15,6 +18,38 @@ class _AuthFormState extends State<AuthForm> {
   var _password = '';
   var _username = '';
   bool isLoginPage = false;
+  //-----------------------------------------------
+
+  startauthentication() {
+    final validity = _formKey.currentState!.validate();
+    FocusScope.of(context).unfocus();
+    if (validity) {
+      _formKey.currentState?.save();
+      submitform(_email, _password, _username);
+    }
+  }
+
+  submitform(String email, String password, String username) async {
+    final auth = FirebaseAuth.instance;
+    UserCredential authResult;
+    try {
+      if (isLoginPage) {
+        authResult = await auth.createUserWithEmailAndPassword(
+            email: email, password: password);
+      } else {
+        authResult = await auth.createUserWithEmailAndPassword(
+            email: email, password: password);
+        String uid = authResult.user!.uid;
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set({'username': username, 'email': email});
+      }
+    } catch (error) {
+      print('error');
+    }
+  }
+
   //-----------------------------------------------
 
   @override
@@ -77,6 +112,7 @@ class _AuthFormState extends State<AuthForm> {
                       height: 10,
                     ),
                     TextFormField(
+                      obscureText: true,
                       keyboardType: TextInputType.emailAddress,
                       key: ValueKey('password'),
                       validator: (value) {
@@ -103,7 +139,9 @@ class _AuthFormState extends State<AuthForm> {
                         width: double.infinity,
                         height: 70,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            startauthentication();
+                          },
                           child: isLoginPage
                               ? Text(
                                   'Login',
@@ -117,7 +155,21 @@ class _AuthFormState extends State<AuthForm> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               backgroundColor: Colors.teal[400]),
-                        ))
+                        )),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              isLoginPage = !isLoginPage;
+                            });
+                          },
+                          child: isLoginPage
+                              ? Text('Nat a member')
+                              : Text('Already a Member?')),
+                    )
                   ],
                 )),
           ),
