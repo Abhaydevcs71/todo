@@ -36,7 +36,8 @@ class _AddTaskState extends State<AddTask> {
       'title': titleController.text,
       'description': descriptionController.text,
       'time': time.toString(),
-      'userId': uid
+      'userId': uid,
+      'timestamp': time
     });
     Fluttertoast.showToast(msg: 'Succesfully Added');
   }
@@ -78,6 +79,7 @@ class _AddTaskState extends State<AddTask> {
               child: ElevatedButton(
                   onPressed: () async {
                     await addTAskToFirebase();
+                    Navigator.pop(context);
                   },
                   style: ButtonStyle(backgroundColor:
                       MaterialStateProperty.resolveWith<Color>(

@@ -167,8 +167,16 @@ class _AuthFormState extends State<AuthForm> {
                             });
                           },
                           child: isLoginPage
-                              ? Text('Nat a member')
-                              : Text('Already a Member?')),
+                              ? Text(
+                                  'Not a member',
+                                  style: GoogleFonts.roboto(
+                                      fontSize: 16, color: Colors.white),
+                                )
+                              : Text(
+                                  'Already a Member?',
+                                  style: GoogleFonts.roboto(
+                                      fontSize: 16, color: Colors.white),
+                                )),
                     )
                   ],
                 )),
